@@ -8,7 +8,7 @@ const Sidebar = ({ links }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-dvh w-full bg-white border-r  border-gray-200 flex flex-col">
+    <div className="h-dvh w-full bg-white flex flex-col">
       {/* Logo Section */}
       <div className="h-16 flex items-center px-6 border-b border-gray-200">
         <Button
