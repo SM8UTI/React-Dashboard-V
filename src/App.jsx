@@ -2,13 +2,19 @@ import { Button } from "@mantine/core";
 import { RiLogoutBoxLine } from "react-icons/ri";
 import RouterData from "./router/RouterData";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const App = () => {
+  const handleLogout = () => {
+    Cookies.remove("token");
+    window.location.href = "/login";
+  };
+
   return (
     <div className="font-primary bg-gray-50/50">
       <div className="p-4 flex border-b sticky bg-white top-0 left-0 border-black/10 flex-row items-center justify-between gap-4 ">
         <img
-          src="https://placehold.co/600x200"
+          src="https://vsbm.odishavikash.com/assets/img/VSBM.png"
           alt="logo"
           className="w-full max-w-[140px]"
         />
@@ -17,7 +23,12 @@ const App = () => {
             <h3 className="text-xl font-bold">Admin Dashboard</h3>
             <p className="text-xs text-gray-500">Welcome back, Admin!</p>
           </div>
-          <Button size="md" variant="light" rightSection={<RiLogoutBoxLine />}>
+          <Button
+            size="md"
+            variant="light"
+            rightSection={<RiLogoutBoxLine />}
+            onClick={handleLogout}
+          >
             Log out
           </Button>
         </div>

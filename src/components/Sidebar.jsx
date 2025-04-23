@@ -2,9 +2,15 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button, ScrollArea, Text, Box } from "@mantine/core";
 import { RiArrowLeftLine, RiLogoutBoxLine } from "react-icons/ri";
+import Cookies from "js-cookie";
 
 const Sidebar = ({ links }) => {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    Cookies.remove("token");
+    window.location.href = "/login";
+  };
 
   return (
     <div className="h-dvh w-full bg-white flex flex-col">
@@ -74,8 +80,7 @@ const Sidebar = ({ links }) => {
           fw={500}
           leftSection={<RiLogoutBoxLine size={20} />}
           onClick={() => {
-            // Add logout functionality
-            console.log("Logging out...");
+            handleLogout();
           }}
         >
           Logout

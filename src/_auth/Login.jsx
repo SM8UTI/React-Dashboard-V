@@ -14,14 +14,17 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { RiLockLine, RiLoginBoxLine, RiMailLine } from "react-icons/ri";
+import { API_URL } from "../../utils/Constant";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm({
     initialValues: {
-      email: "",
-      password: "",
+      email: "johndoe@example.com",
+      password: "securepassword",
     },
     validate: {
       email: (value) =>
@@ -31,19 +34,31 @@ const Login = () => {
     },
   });
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     setLoading(true);
 
-    // Simulate API call - replace with your actual API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await axios.post(`${API_URL}/teachers/login`, values);
+      const { message, token } = response.data;
+
+      // Save token using js-cookie
+      Cookies.set("token", token, { expires: 7 });
+
       notifications.show({
         title: "Login Successful",
-        message: "Welcome to the admin dashboard!",
+        message: message,
         color: "green",
       });
-      console.log(values);
-    }, 1500);
+      window.location.href = "/";
+    } catch (error) {
+      notifications.show({
+        title: "Login Failed",
+        message: error.response?.data?.message || "An error occurred",
+        color: "red",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,9 +76,9 @@ const Login = () => {
         <div className="flex flex-col items-center mb-6">
           {/* todo : image change  */}
           <img
-            src="https://placehold.co/400"
+            src="https://vsbm.odishavikash.com/assets/img/VSBM.png"
             alt="Logo"
-            className="size-[60px] object-contain object-center mb-4"
+            className="size-[125px] object-contain object-center mb-4"
           />
           <Title
             order={2}
@@ -118,13 +133,6 @@ const Login = () => {
             </Button>
           </Stack>
         </form>
-
-        <div className="mt-6 text-center text-sm text-gray-500">
-          By signing in, you agree to abide by our
-          <Anchor href="#" size="sm" className="ml-1">
-            Terms and Conditions
-          </Anchor>
-        </div>
       </Paper>
     </div>
   );

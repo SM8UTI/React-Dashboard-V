@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   Box,
   Text,
@@ -17,54 +17,8 @@ import {
   BiCalendarEvent,
 } from "react-icons/bi";
 import DynamicDataTable from "../../../components/DynamicDataTable";
-
-// Mock teacher data
-const teacherData = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    email: "sarah.johnson@school.edu",
-    phone: "+1 (555) 123-4567",
-    subjects: ["Mathematics", "Physics"],
-    department: "Science",
-    status: "active",
-    joiningDate: "2020-08-15",
-    avatar: null,
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    email: "michael.chen@school.edu",
-    phone: "+1 (555) 234-5678",
-    subjects: ["Chemistry", "Biology"],
-    department: "Science",
-    status: "active",
-    joiningDate: "2019-09-01",
-    avatar: null,
-  },
-  {
-    id: 3,
-    name: "Emily Rodriguez",
-    email: "emily.rodriguez@school.edu",
-    phone: "+1 (555) 345-6789",
-    subjects: ["English Literature", "Creative Writing"],
-    department: "English",
-    status: "on_leave",
-    joiningDate: "2021-01-10",
-    avatar: null,
-  },
-  {
-    id: 4,
-    name: "David Kim",
-    email: "david.kim@school.edu",
-    phone: "+1 (555) 456-7890",
-    subjects: ["History", "Geography"],
-    department: "Social Studies",
-    status: "active",
-    joiningDate: "2018-07-20",
-    avatar: null,
-  },
-];
+import axios from "axios";
+import { API_URL } from "../../../../utils/Constant";
 
 const TeacherActions = ({ teacher }) => {
   return (
@@ -77,10 +31,10 @@ const TeacherActions = ({ teacher }) => {
 
       <Menu.Dropdown>
         <Menu.Item leftSection={<BiEdit size={14} />}>Edit</Menu.Item>
-        <Menu.Item leftSection={<BiMailSend size={14} />}>Send Email</Menu.Item>
-        <Menu.Item leftSection={<BiCalendarEvent size={14} />}>
+        {/* <Menu.Item leftSection={<BiMailSend size={14} />}>Send Email</Menu.Item> */}
+        {/* <Menu.Item leftSection={<BiCalendarEvent size={14} />}>
           View Schedule
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Divider />
         <Menu.Item color="red" leftSection={<BiTrash size={14} />}>
           Delete
@@ -91,6 +45,46 @@ const TeacherActions = ({ teacher }) => {
 };
 
 const TeacherList = () => {
+  const [teacherData, setTeacherData] = useState([]);
+
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1];
+
+        if (!token) {
+          throw new Error("Token not found in cookies");
+        }
+
+        const response = await axios.get(`${API_URL}/teachers`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Teacher Data:", response.data);
+        const data = response.data.map((teacher) => ({
+          id: teacher.id,
+          name: teacher.name,
+          email: teacher.email,
+          phone: "N/A", // Add phone if available
+          subjects: teacher.subjects, // Add subjects if available
+          department: teacher.is_admin ? "Admin" : "Staff",
+          status: "active", // Adjust status if available
+          joiningDate: "N/A", // Add joining date if available
+          avatar: null,
+        }));
+        setTeacherData(data);
+      } catch (error) {
+        console.error("Error fetching teacher data:", error);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
+
   const columns = useMemo(
     () => [
       {
@@ -167,7 +161,7 @@ const TeacherList = () => {
         header: "Joining Date",
         cell: ({ row }) => (
           <Text size="sm" c="dimmed">
-            {new Date(row.original.joiningDate).toLocaleDateString()}
+            {row.original.joiningDate}
           </Text>
         ),
       },

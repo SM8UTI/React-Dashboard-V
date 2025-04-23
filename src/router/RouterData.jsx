@@ -1,8 +1,13 @@
 import { lazy } from "react";
-
 const TeacherIndex = lazy(() => import("../_pages/_teacher/Index"));
 const TeacherAdd = lazy(() => import("../_pages/_teacher/pages/TeacherAdd"));
 const TeacherList = lazy(() => import("../_pages/_teacher/pages/TeacherList"));
+const CourseIndex = lazy(() => import("../_pages/_course/Index"));
+const CourseAdd = lazy(() => import("../_pages/_course/pages/AddCourse"));
+const CourseList = lazy(() => import("../_pages/_course/pages/GetCourse"));
+const StudentIndex = lazy(() => import("../_pages/_student/Index"));
+const StudentAdd = lazy(() => import("../_pages/_student/pages/StudentAdd"));
+const StudentList = lazy(() => import("../_pages/_student/pages/StudentList"));
 
 export const FindRoute = (path) => {
   // Helper function to format route object
@@ -63,26 +68,36 @@ const RouterData = [
   {
     path: "/course",
     name: "Course",
-    icon: "/assets/teacher.png",
-    element: <TeacherIndex />,
+    icon: "/assets/certificate.png",
+    element: <CourseIndex />,
     children: [
       {
         path: "/course/add",
         name: "Add Course",
-        element: <TeacherAdd />,
+        element: <CourseAdd />,
       },
+      {
+        path: "/course/list",
+        name: "List Course",
+        element: <CourseList />,
+      }
     ],
   },
   {
     path: "/students",
     name: "Students",
-    icon: "/assets/teacher.png",
-    element: <TeacherIndex />,
+    icon: "/assets/graduates.png",
+    element: <StudentIndex />,
     children: [
       {
         path: "/students/add",
         name: "Add Students",
-        element: <TeacherAdd />,
+        element: <StudentAdd />,
+      },
+      {
+        path: "/students/list",
+        name: "List Students",
+        element: <StudentList />,
       },
     ],
   },
