@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -19,7 +19,6 @@
     "@mantine/notifications": "^7.17.4",
     "@mantine/nprogress": "^7.17.4",
     "@mantine/tiptap": "^7.17.4",
-    "@tabler/icons-react": "^3.31.0",
     "@tailwindcss/vite": "^4.1.4",
     "@tanstack/react-table": "^8.21.3",
     "@tiptap/extension-link": "^2.11.7",

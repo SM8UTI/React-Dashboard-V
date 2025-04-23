@@ -12,9 +12,8 @@ import {
   rem,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconMail, IconLock, IconSchool } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
-import { RiLoginBoxLine } from "react-icons/ri";
+import { RiLockLine, RiLoginBoxLine, RiMailLine } from "react-icons/ri";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -90,7 +89,7 @@ const Login = () => {
               label="Email Address"
               placeholder="admin@school.edu"
               size="md"
-              icon={<IconMail size={16} />}
+              icon={<RiMailLine size={16} />}
               {...form.getInputProps("email")}
               classNames={{
                 label: "text-gray-400 !text-xs mb-2 font-medium",
@@ -102,7 +101,7 @@ const Login = () => {
               label="Password"
               placeholder="Your password"
               size="md"
-              icon={<IconLock size={16} />}
+              icon={<RiLockLine size={16} />}
               {...form.getInputProps("password")}
               classNames={{
                 label: "text-gray-400 !text-xs mb-2 font-medium",

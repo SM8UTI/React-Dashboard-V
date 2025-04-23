@@ -1,8 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button, ScrollArea, Text, Box } from "@mantine/core";
-import { IconLogout } from "@tabler/icons-react";
-import { RiArrowLeftLine } from "react-icons/ri";
+import { RiArrowLeftLine, RiLogoutBoxLine } from "react-icons/ri";
 
 const Sidebar = ({ links }) => {
   const navigate = useNavigate();
@@ -73,7 +72,7 @@ const Sidebar = ({ links }) => {
           color="red"
           fullWidth
           fw={500}
-          leftSection={<IconLogout size={20} />}
+          leftSection={<RiLogoutBoxLine size={20} />}
           onClick={() => {
             // Add logout functionality
             console.log("Logging out...");
