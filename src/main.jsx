@@ -3,10 +3,16 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import '@mantine/dates/styles.css';
 import { createTheme, MantineProvider } from "@mantine/core";
 import { RouterProvider } from "react-router-dom";
 import AppRouter from "./router/AppRouter.jsx";
 import { Notifications } from "@mantine/notifications";
+import axios from "axios";
+import { API_URL } from "../utils/Constant";
+import React, { useEffect } from "react";
+import Cookies from "js-cookie";
+
 
 const theme = createTheme({
   fontFamily: "Instrument Sans",
@@ -39,11 +45,39 @@ const theme = createTheme({
   },
 });
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <MantineProvider theme={theme}>
-      <Notifications zIndex={1000000000} />
-      <RouterProvider router={AppRouter} />
-    </MantineProvider>
-  </StrictMode>
-);
+const App = () => {
+  // useEffect(() => {
+  //   const checkTokenValidity = async () => {
+  //     const token = Cookies.get("token");
+  //     if (token) {
+  //       try {
+  //         const response = await axios.get(`${API_URL}/is-token-valid`, {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         });
+  //         if (response.data.error === "Invalid token") {
+  //           Cookies.remove("token");
+  //           window.location.href = "/login";
+  //         }
+  //       } catch (error) {
+  //         Cookies.remove("token");
+  //         window.location.href = "/login";
+  //       }
+  //     } else {
+  //       window.location.href = "/login";
+  //     }
+  //   };
+
+  //   checkTokenValidity();
+  // }, []);
+
+  return (
+    <StrictMode>
+      <MantineProvider theme={theme}>
+        <Notifications zIndex={1000000000} />
+        <RouterProvider router={AppRouter} />
+      </MantineProvider>
+    </StrictMode>
+  );
+};
+
+createRoot(document.getElementById("root")).render(<App />);

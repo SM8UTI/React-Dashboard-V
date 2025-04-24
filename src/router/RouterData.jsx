@@ -8,6 +8,18 @@ const CourseList = lazy(() => import("../_pages/_course/pages/GetCourse"));
 const StudentIndex = lazy(() => import("../_pages/_student/Index"));
 const StudentAdd = lazy(() => import("../_pages/_student/pages/StudentAdd"));
 const StudentList = lazy(() => import("../_pages/_student/pages/StudentList"));
+const StudentUpgrade = lazy(() => import("../_pages/_student/pages/StudentUpgrade"));
+const SemesterIndex = lazy(() => import("../_pages/_semester/Index"));
+const SemesterAdd = lazy(() => import("../_pages/_semester/pages/SemesterAdd"));
+const SemesterList = lazy(() => import("../_pages/_semester/pages/SemesterList"));
+const SubjectIndex = lazy(() => import("../_pages/_subject/Index"));
+const SubjectAdd = lazy(() => import("../_pages/_subject/pages/SubjectAdd"));
+const SubjectList = lazy(() => import("../_pages/_subject/pages/SubjectList"));
+const SlotIndex = lazy(() => import("../_pages/_timeslot/Index"));
+const SlotAdd = lazy(() => import("../_pages/_timeslot/pages/SlotAdd"));
+const SlotList = lazy(() => import("../_pages/_timeslot/pages/SlotList"));
+const AttendanceIndex = lazy(() => import("../_pages/_attendance/Index"));
+const AttendanceSheet = lazy(() => import("../_pages/_attendance/pages/AttendanceSheet"));
 
 export const FindRoute = (path) => {
   // Helper function to format route object
@@ -99,8 +111,80 @@ const RouterData = [
         name: "List Students",
         element: <StudentList />,
       },
+      {
+        path: "/students/upgrade",
+        name: "Upgrade Students",
+        element: <StudentUpgrade />,
+      },
     ],
   },
+  {
+    path: "/semesters",
+    name: "Semester",
+    icon: "/assets/semester.png",
+    element: <SemesterIndex />,
+    children: [
+      {
+        path: "/semesters/add",
+        name: "Add Semester",
+        element: <SemesterAdd />,
+      },
+      {
+        path: "/semesters/list",
+        name: "List Semester",
+        element: <SemesterList />,
+      },
+    ],
+  },
+  {
+    path: "/subjects",
+    name: "Subjects",
+    icon: "/assets/elearning.png",
+    element: <SubjectIndex />,
+    children: [
+      {
+        path: "/subjects/add",
+        name: "Add Subjects",
+        element: <SubjectAdd />,
+      },
+      {
+        path: "/subjects/list",
+        name: "List Subjects",
+        element: <SubjectList />,
+      },
+    ],
+  },
+  {
+    path: "/slots",
+    name: "Slots",
+    icon: "/assets/timetable.png",
+    element: <SlotIndex />,
+    children: [
+      {
+        path: "/slots/add",
+        name: "Add Slots",
+        element: <SlotAdd />,
+      },
+      {
+        path: "/slots/list",
+        name: "List Slots",
+        element: <SlotList />,
+      },
+    ],
+  },
+  {
+    path: "/attendance",
+    name: "Attendance",
+    icon: "/assets/attendance.png",
+    element: <AttendanceIndex />,
+    children: [
+      {
+        path: "/attendance/sheet",
+        name: "Add Attendance",
+        element: <AttendanceSheet />,
+      }
+    ],
+  }
 ];
 
 export default RouterData;
