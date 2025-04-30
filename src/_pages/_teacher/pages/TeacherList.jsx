@@ -7,6 +7,12 @@ import {
   ActionIcon,
   Avatar,
   Menu,
+  Modal,
+  TextInput,
+  Checkbox,
+  Button,
+  Stack,
+  MultiSelect,
 } from "@mantine/core";
 import {
   BiEdit,
@@ -19,8 +25,147 @@ import {
 import DynamicDataTable from "../../../components/DynamicDataTable";
 import axios from "axios";
 import { API_URL } from "../../../../utils/Constant";
+import { notifications } from "@mantine/notifications";
 
-const TeacherActions = ({ teacher }) => {
+const TeacherEditModal = ({ isOpen, onClose, teacher, onTeacherUpdated }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subjects: [],
+    is_admin: false,
+  });
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [availableSubjects] = useState([
+    "Mathematics", "Science", "History", "English", "Physics", 
+    "Chemistry", "Biology", "Computer Science", "Geography", "Art"
+  ]);
+
+  useEffect(() => {
+    if (teacher) {
+      setFormData({
+        name: teacher.name || "",
+        email: teacher.email || "",
+        phone: teacher.phone || "",
+        subjects: teacher.subjects || [],
+        is_admin: teacher.department === "Admin",
+      });
+    }
+  }, [teacher]);
+
+  const handleInputChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1];
+
+      if (!token) {
+        throw new Error("Token not found in cookies");
+      }
+
+      const response = await axios.put(`${API_URL}/teachers/${teacher.id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      notifications.show({
+        title: "Success",
+        message: "Teacher information updated successfully",
+        color: "green",
+      });
+      
+      onTeacherUpdated(teacher.id, {
+        ...teacher,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        is_admin: formData.is_admin,
+      });
+      
+      onClose();
+    } catch (error) {
+      console.error("Error updating teacher:", error);
+      notifications.show({
+        title: "Update Failed",
+        message: error.response?.data?.message || "An error occurred while updating teacher information.",
+        color: "red",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Modal opened={isOpen} onClose={onClose} title="Edit Teacher Information" size="md">
+      <form onSubmit={handleSubmit}>
+        <Stack>
+          <TextInput
+            label="Name"
+            placeholder="Enter teacher name"
+            value={formData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+            required
+          />
+          
+          <TextInput
+            label="Email"
+            placeholder="Enter teacher email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange("email", e.target.value)}
+            required
+          />
+          
+          <TextInput
+            label="Phone"
+            placeholder="Enter phone number"
+            value={formData.phone}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
+          />
+          
+          {/* <MultiSelect
+            label="Subjects"
+            placeholder="Select teaching subjects"
+            data={availableSubjects}
+            value={formData.subjects}
+            onChange={(value) => handleInputChange("subjects", value)}
+            searchable
+            creatable
+            getCreateLabel={(query) => `+ Add ${query}`}
+            onCreate={(query) => {
+              const item = query;
+              return item;
+            }}
+          /> */}
+          
+          <Checkbox
+            label="Is Admin"
+            checked={formData.is_admin}
+            onChange={(e) => handleInputChange("is_admin", e.target.checked)}
+            mt="xs"
+          />
+        </Stack>
+        
+        <Group justify="flex-end" mt="xl">
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="submit" loading={isLoading}>Update</Button>
+        </Group>
+      </form>
+    </Modal>
+  );
+};
+
+const TeacherActions = ({ teacher, onEdit }) => {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
@@ -30,11 +175,9 @@ const TeacherActions = ({ teacher }) => {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item leftSection={<BiEdit size={14} />}>Edit</Menu.Item>
-        {/* <Menu.Item leftSection={<BiMailSend size={14} />}>Send Email</Menu.Item> */}
-        {/* <Menu.Item leftSection={<BiCalendarEvent size={14} />}>
-          View Schedule
-        </Menu.Item> */}
+        <Menu.Item leftSection={<BiEdit size={14} />} onClick={() => onEdit(teacher)}>
+          Edit
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item color="red" leftSection={<BiTrash size={14} />}>
           Delete
@@ -46,6 +189,8 @@ const TeacherActions = ({ teacher }) => {
 
 const TeacherList = () => {
   const [teacherData, setTeacherData] = useState([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -69,11 +214,11 @@ const TeacherList = () => {
           id: teacher.id,
           name: teacher.name,
           email: teacher.email,
-          phone: "N/A", // Add phone if available
-          subjects: teacher.subjects, // Add subjects if available
+          phone: teacher.phone || "N/A", // Add phone if available
+          subjects: teacher.subjects || [], // Add subjects if available
           department: teacher.is_admin ? "Admin" : "Staff",
           status: "active", // Adjust status if available
-          joiningDate: "N/A", // Add joining date if available
+          joiningDate: teacher.joining_date || "N/A", // Add joining date if available
           avatar: null,
         }));
         setTeacherData(data);
@@ -84,6 +229,17 @@ const TeacherList = () => {
 
     fetchTeachers();
   }, []);
+
+  const handleEditTeacher = (teacher) => {
+    setSelectedTeacher(teacher);
+    setIsEditModalOpen(true);
+  };
+
+  const handleTeacherUpdated = (id, updatedTeacher) => {
+    setTeacherData(teacherData.map(teacher => 
+      teacher.id === id ? updatedTeacher : teacher
+    ));
+  };
 
   const columns = useMemo(
     () => [
@@ -130,11 +286,15 @@ const TeacherList = () => {
         header: "Subjects",
         cell: ({ row }) => (
           <Group gap={4}>
-            {row.original.subjects.map((subject, index) => (
-              <Badge key={index} color="primary" variant="light" size="sm">
-                {subject}
-              </Badge>
-            ))}
+            {row.original.subjects && row.original.subjects.length > 0 ? (
+              row.original.subjects.map((subject, index) => (
+                <Badge key={index} color="primary" variant="light" size="sm">
+                  {subject}
+                </Badge>
+              ))
+            ) : (
+              <Text size="xs" c="dimmed">No subjects assigned</Text>
+            )}
           </Group>
         ),
       },
@@ -168,7 +328,12 @@ const TeacherList = () => {
       {
         id: "actions",
         header: "Actions",
-        cell: ({ row }) => <TeacherActions teacher={row.original} />,
+        cell: ({ row }) => (
+          <TeacherActions 
+            teacher={row.original} 
+            onEdit={handleEditTeacher}
+          />
+        ),
       },
     ],
     []
@@ -194,6 +359,13 @@ const TeacherList = () => {
         enableSorting
         enableFiltering
         enablePagination
+      />
+
+      <TeacherEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        teacher={selectedTeacher}
+        onTeacherUpdated={handleTeacherUpdated}
       />
     </Box>
   );
