@@ -1,12 +1,21 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FindRoute } from "../../router/RouterData";
 import Sidebar from "../../components/Sidebar";
 import { Button, Drawer } from "@mantine/core";
 import { RiMenu2Line } from "react-icons/ri";
 import { useDisclosure } from "@mantine/hooks";
+import { useEffect } from "react";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if(location.pathname === "/slots" || location.pathname === "/slots/") {
+      navigate("/slots/list");
+    }
+    document.title = "Slots | College Management System";
+  }, []);
   const result = FindRoute("/slots");
   const [opened, { open, close }] = useDisclosure(false);
 

@@ -1,12 +1,21 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FindRoute } from "../../router/RouterData";
 import Sidebar from "../../components/Sidebar";
 import { Button, Drawer } from "@mantine/core";
 import { RiMenu2Line } from "react-icons/ri";
 import { useDisclosure } from "@mantine/hooks";
+import { useEffect } from "react";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if(location.pathname === "/attendance" || location.pathname === "/attendance/") {
+      navigate("/attendance/sheet");
+    }
+    document.title = "Attendance | School Management System";
+  }, []);
   const result = FindRoute("/attendance");
   const [opened, { open, close }] = useDisclosure(false);
 
